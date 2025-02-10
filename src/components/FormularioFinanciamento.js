@@ -11,8 +11,8 @@ function FormularioFinanciamento({ onAdicionar }) {
     valorEntrada: '',
     prazoMeses: '',
     taxaJurosAnual: '',
-    taxaAdministracao: '',
-    seguros: '',
+    encargosAdm: '',
+    encargosSeguro: '',
     taxaTR: ''
   });
 
@@ -39,45 +39,55 @@ function FormularioFinanciamento({ onAdicionar }) {
 
   const validarFormulario = () => {
     const valorImovelNum = converterParaNumero(form.valorImovel);
-    const valorEntradaNum = converterParaNumero(form.valorEntrada);    
+    const valorEntradaNum = converterParaNumero(form.valorEntrada);
+    const taxaJuros = converterParaNumero(form.taxaJurosAnual);
+    const taxaTR = converterParaNumero(form.taxaTR);
+    const prazo = converterParaNumero(form.prazoMeses);
+    const encargosAdm = converterParaNumero(form.encargosAdm);
+    const encargosSeguro = converterParaNumero(form.encargosSeguro);
     
-    if (valorImovelNum < 0) {
-      setErro('O valor do imóvel deve ser maior que zero');
+    if (valorImovelNum <= 0) {
+      setErro('O valor do imóvel deve ser maior que zero.');
       return false;
     }
-    if (valorEntradaNum < 0) {
-      setErro('O valor da entrada deve ser maior que zero');
+    if (valorEntradaNum <= 0) {
+      setErro('O valor da entrada deve ser maior que zero.');
       return false;
     }
-    if (valorEntradaNum > valorImovelNum) {
-      setErro('O valor da entrada deve ser menor que o valor do imóvel');
+    if (valorEntradaNum >= valorImovelNum) {
+      setErro('O valor da entrada deve ser menor que o valor do imóvel.');
       return false;
     } else if (valorEntradaNum < valorImovelNum * 0.2) {
-      setErro('A entrada mínima deve ser de 20% do valor do imóvel');
+      setErro('A entrada mínima deve ser de 20% do valor do imóvel.');
       return false;
     }
-    if (!form.prazoMeses || form.prazoMeses <= 0) {
-      setErro('O prazo deve ser maior que zero');
+    if (prazo <= 0) {
+      setErro('O prazo deve ser maior que zero.');
+      return false;
+    }
+    if (prazo < 120) {
+      setErro('O prazo mínimo é de 120 meses (10 anos).');
+      return false;
+    } else if (prazo > 420) {
+      setErro('O prazo máximo é de 420 meses (35 anos).');
+      return false;
+    }
+    
+    if (taxaJuros <= 0) {
+      setErro('A taxa de juros deve ser maior que zero.');
+      return false;
+    }
+    if (taxaTR < 0) {
+      setErro('A taxa TR não pode ser negativa.');
       return false;
     }
 
-    const prazo = parseInt(form.prazoMeses);
-    if (prazo < 120) {
-      setErro('O prazo mínimo é de 120 meses (10 anos)');
-    } else if (prazo > 420) {
-      setErro('O prazo máximo é de 420 meses (35 anos)');
-    }
-    
-    if (!form.taxaJurosAnual || form.taxaJurosAnual <= 0) {
-      setErro('A taxa de juros deve ser maior que zero');
+    if (encargosAdm < 0) {
+      setErro('A taxa de administração não pode ser negativa.');
       return false;
     }
-    if (!form.taxaAdministracao || form.taxaAdministracao < 0) {
-      setErro('A taxa de administração não pode ser negativa');
-      return false;
-    }
-    if (!form.seguros || form.seguros < 0) {
-      setErro('O valor dos seguros não pode ser negativo');
+    if (!encargosSeguro < 0) {
+      setErro('O valor dos seguros não pode ser negativo.');
       return false;
     }
     setErro('');
@@ -100,10 +110,10 @@ function FormularioFinanciamento({ onAdicionar }) {
         tipo: form.tipo,
         valorFinanciado,
         prazoMeses: parseInt(form.prazoMeses),
-        taxaJurosAnual: parseFloat(form.taxaJurosAnual.replace(',', '.')),
-        taxaAdministracao: parseFloat(form.taxaAdministracao.replace(',', '.')),
-        seguros: parseFloat(form.seguros.replace(',', '.')),
-        taxaTR: parseFloat(form.taxaTR.replace(',', '.')),
+        taxaJurosAnual: converterParaNumero(form.taxaJurosAnual),
+        encargosAdm: converterParaNumero(form.encargosAdm),
+        encargosSeguro: converterParaNumero(form.encargosSeguro),
+        taxaTR: converterParaNumero(form.taxaTR),
       });
 
       onAdicionar({
@@ -119,8 +129,8 @@ function FormularioFinanciamento({ onAdicionar }) {
         valorEntrada: '',
         prazoMeses: '',
         taxaJurosAnual: '',
-        taxaAdministracao: '',
-        seguros: '',
+        encargosAdm: '',
+        encargosSeguro: '',
         taxaTR: ''
       });
       setErro('');
@@ -226,6 +236,7 @@ function FormularioFinanciamento({ onAdicionar }) {
               value={form.prazoMeses}
               onValueChange={handlePrazoChange}
               decimalScale={0}
+              allowNegative={false}
               placeholder="360"
               min={120}
               max={420}
@@ -249,6 +260,7 @@ function FormularioFinanciamento({ onAdicionar }) {
                 setForm({ ...form, taxaJurosAnual: values.value });
               }}
               decimalScale={2}
+              allowNegative={false}
               fixedDecimalScale
               decimalSeparator=","
               suffix="%"
@@ -272,6 +284,7 @@ function FormularioFinanciamento({ onAdicionar }) {
               decimalScale={2}
               fixedDecimalScale
               decimalSeparator=","
+              allowNegative={false}
               suffix="%"
               placeholder="1,70%"
               className="w-full pr-8 pl-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-colors duration-200"
@@ -289,9 +302,9 @@ function FormularioFinanciamento({ onAdicionar }) {
               <span className="text-gray-500">R$</span>
             </div>
             <NumericFormat
-              value={form.taxaAdministracao}
+              value={form.encargosAdm}
               onValueChange={(values) => {
-                setForm({ ...form, taxaAdministracao: values.value });
+                setForm({ ...form, encargosAdm: values.value });
               }}
               thousandSeparator="."
               decimalSeparator=","
@@ -316,9 +329,9 @@ function FormularioFinanciamento({ onAdicionar }) {
               <span className="text-gray-500">R$</span>
             </div>
             <NumericFormat
-              value={form.seguros}
+              value={form.encargosSeguro}
               onValueChange={(values) => {
-                setForm({ ...form, seguros: values.value });
+                setForm({ ...form, encargosSeguro: values.value });
               }}
               thousandSeparator="."
               decimalSeparator=","

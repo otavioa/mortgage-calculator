@@ -3,13 +3,13 @@ export const calcularParcelas = ({
   valorFinanciado,
   prazoMeses,
   taxaJurosAnual,
-  taxaAdministracao,
-  seguros,
+  encargosAdm,
+  encargosSeguro,
   taxaTR
 }) => {
   const taxaJurosMensal = (1 + taxaJurosAnual / 100) ** (1 / 12) - 1;
   const taxaTRMensal = (taxaTR / 12) / 100;
-  const custosMensais = taxaAdministracao + seguros;
+  const custosMensais = encargosAdm + encargosSeguro;
   
   if (tipo === 'SAC') {
     return calcularParcelasSAC(valorFinanciado, prazoMeses, taxaJurosMensal, custosMensais, taxaTRMensal);
@@ -37,7 +37,7 @@ const calcularParcelasSAC = (valorFinanciado, prazoMeses, taxaJurosMensal, custo
       juros,
       custosMensais,
       taxaTRMensal,
-      saldoDevedor: Math.max(0, saldoDevedor)
+      saldoDevedor
     });
   }
 
