@@ -352,7 +352,7 @@ function FormularioFinanciamento({ onAdicionar }) {
           type="submit"
           className="w-full py-3 px-4 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transform transition-all duration-200 hover:-translate-y-0.5"
         >
-          Calcular Financiamento
+          Incluir Simulação
         </button>
       </div>
     </form>

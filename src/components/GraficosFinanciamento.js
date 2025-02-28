@@ -31,6 +31,14 @@ function GraficosFinanciamento({ simulacoes }) {
               backgroundColor: cores[(index + 1) % cores.length],
               tension: 0.1,
               yAxisID: 'y1',
+            },
+            {
+              label: "Amortização",
+              data: simulacao.parcelas.map(p => p.amortizacao),
+              borderColor: cores[(index + 2) % cores.length],
+              backgroundColor: cores[(index + 2) % cores.length],
+              tension: 0.1,
+              yAxisID: 'y',
             }
           ]
         };
@@ -53,7 +61,7 @@ function GraficosFinanciamento({ simulacoes }) {
           scales: {
             y: {
               min: 0,
-              max: Math.max(...simulacao.parcelas.map(p => p.valorParcela)) * 1.1,
+              max: Math.max(...simulacao.parcelas.map(p => Math.max(p.valorParcela, p.amortizacao))) * 1.1,
               position: 'left',
             },
             y1: {
