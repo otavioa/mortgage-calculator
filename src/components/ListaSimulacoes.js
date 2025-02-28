@@ -40,73 +40,75 @@ function ListaSimulacoes({ simulacoes, onRemover }) {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md w-full">
-      <div className="space-y-4">
-        {simulacoes.map((simulacao, index) => {
-          const temParcelas = simulacao.parcelas && simulacao.parcelas.length > 0;
-          const primeiraParcela = temParcelas ? simulacao.parcelas[0].valorParcela : null;
-          const ultimaParcela = temParcelas ? simulacao.parcelas[simulacao.parcelas.length - 1].valorParcela : null;
+      <div className="overflow-x-auto">
+        <div className="space-y-4 min-w-[425px]">
+          {simulacoes.map((simulacao, index) => {
+            const temParcelas = simulacao.parcelas && simulacao.parcelas.length > 0;
+            const primeiraParcela = temParcelas ? simulacao.parcelas[0].valorParcela : null;
+            const ultimaParcela = temParcelas ? simulacao.parcelas[simulacao.parcelas.length - 1].valorParcela : null;
 
-          let totalGasto = 0;
-          let totalJuros = 0;
-          let totalCustos = 0;
+            let totalGasto = 0;
+            let totalJuros = 0;
+            let totalCustos = 0;
 
-          if (temParcelas) {
-            simulacao.parcelas.forEach(parcela => {
-              totalGasto += parcela.valorParcela;
-              totalJuros += parcela.juros;
-              totalCustos += parcela.custosMensais;
-            });
-          }
+            if (temParcelas) {
+              simulacao.parcelas.forEach(parcela => {
+                totalGasto += parcela.valorParcela;
+                totalJuros += parcela.juros;
+                totalCustos += parcela.custosMensais;
+              });
+            }
 
-          return (
-            <div
-              key={simulacao.dataCriacao || index}
-              className="border rounded-lg p-4 hover:bg-gray-50 flex justify-between items-center"
-            >
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg">
-                  Financiamento {simulacao.tipo || 'N/A'}
-                </h3>
-                <div className="mt-2 text-sm text-gray-600 grid grid-cols-1 md:grid-cols-3">
-                  <p>Valor do Imóvel: {formatarMoeda(simulacao.valorImovel)}</p>
-                  <p>Valor Financiado: {formatarMoeda(simulacao.valorFinanciado)}</p>
-                  <p>Prazo: {simulacao.prazoMeses} meses</p>
-                  <p>Taxa de Juros: {formatarPorcentagem(simulacao.taxaJurosAnual)} ao ano</p>
-                  <p>Encargos de Taxa Adm. + Seguros: {formatarMoeda(totalCustos)}</p>
-                  <p>Taxa TR: {formatarPorcentagem(simulacao.taxaTR)} ao ano</p>
-                  {temParcelas && (
-                    <>
-                      <p>Primeira Parcela: {formatarMoeda(primeiraParcela)}</p>
-                      <p>Última Parcela: {formatarMoeda(ultimaParcela)}</p>
-                    </>
-                  )}
+            return (
+              <div id="simulacaoContainer"
+                key={simulacao.dataCriacao || index}
+                className="border rounded-lg p-4 hover:bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+              >
+                <div id="simulacaoContent" className="flex-1 w-full">
+                  <h3 className="font-semibold text-lg">
+                    Financiamento {simulacao.tipo || 'N/A'}
+                  </h3>
+                  <div className="mt-2 text-sm text-gray-600 grid grid-cols-1 md:grid-cols-3">
+                    <p>Valor do Imóvel: {formatarMoeda(simulacao.valorImovel)}</p>
+                    <p>Valor Financiado: {formatarMoeda(simulacao.valorFinanciado)}</p>
+                    <p>Prazo: {simulacao.prazoMeses} meses</p>
+                    <p>Taxa de Juros: {formatarPorcentagem(simulacao.taxaJurosAnual)} ao ano</p>
+                    <p>Encargos de Taxa Adm. + Seguros: {formatarMoeda(totalCustos)}</p>
+                    <p>Taxa TR: {formatarPorcentagem(simulacao.taxaTR)} ao ano</p>
+                    {temParcelas && (
+                      <>
+                        <p>Primeira Parcela: {formatarMoeda(primeiraParcela)}</p>
+                        <p>Última Parcela: {formatarMoeda(ultimaParcela)}</p>
+                      </>
+                    )}
+                  </div>
+                  <div className="mt-4 border-t pt-2">
+                    <h4 className="font-semibold text-lg">Totais</h4>
+                    <p className="text-green-600 font-bold">Total gasto: {formatarMoeda(totalGasto)}</p>
+                    <p className="text-green-600 font-bold">Total gasto com Juros: {formatarMoeda(totalJuros)}</p>
+                    <p className="text-green-600 font-bold">Total gasto com Taxa Adm. + Seguros: {formatarMoeda(totalCustos)}</p>
+                  </div>
                 </div>
-                <div className="mt-4 border-t pt-2">
-                  <h4 className="font-semibold text-lg">Totais</h4>
-                  <p className="text-green-600 font-bold">Total gasto: {formatarMoeda(totalGasto)}</p>
-                  <p className="text-green-600 font-bold">Total gasto com Juros: {formatarMoeda(totalJuros)}</p>
-                  <p className="text-green-600 font-bold">Total gasto com Taxa Adm. + Seguros: {formatarMoeda(totalCustos)}</p>
+                <div id="buttonContainer" className="flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-end">
+                  <button
+                    onClick={() => exportarCSV(simulacao)}
+                    className="text-blue-600 hover:text-blue-800 p-2"
+                    title="Exportar como CSV"
+                  >
+                    <ArrowDownTrayIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => onRemover(index)}
+                    className="text-red-600 hover:text-red-800 p-2"
+                    title="Remover simulação"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => exportarCSV(simulacao)}
-                  className="text-blue-600 hover:text-blue-800 p-2"
-                  title="Exportar como CSV"
-                >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => onRemover(index)}
-                  className="text-red-600 hover:text-red-800 p-2"
-                  title="Remover simulação"
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
