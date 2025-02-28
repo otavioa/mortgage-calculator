@@ -81,7 +81,11 @@ function GraficosFinanciamento({ simulacoes }) {
         return (
           <div key={simulacao.dataCriacao} className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-bold mb-4 text-primary-700">Gráfico de {simulacao.tipo}</h3>
-            <Line data={dadosGrafico} options={opcoes} />
+            <div className="overflow-x-auto w-full">
+              <div style={{ minWidth: '700px', minHeight: '350px', width: '100%', height: '100%' }}>
+                <Line data={dadosGrafico} options={opcoes} />
+              </div>
+            </div>
           </div>
         );
       })}
